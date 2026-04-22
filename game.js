@@ -1,6 +1,6 @@
 const COLS = 10;
 const ROWS = 20;
-const BLOCK = 30;
+const BLOCK = 36;
 const BORDER = 3;
 
 // Pastel palette per piece type
@@ -189,14 +189,14 @@ function drawNext() {
     row.forEach((v, c) => {
       if (v) {
         const c2 = COLORS[next.color];
-        const px = (offX + c) * 30, py = (offY + r) * 30;
+        const px = (offX + c) * BLOCK, py = (offY + r) * BLOCK;
         nctx.fillStyle = c2.fill;
-        nctx.fillRect(px, py, 30, 30);
+        nctx.fillRect(px, py, BLOCK, BLOCK);
         nctx.fillStyle = c2.inner;
-        nctx.fillRect(px + BORDER * 2, py + BORDER * 2, 30 - BORDER * 4, 30 - BORDER * 4);
+        nctx.fillRect(px + BORDER * 2, py + BORDER * 2, BLOCK - BORDER * 4, BLOCK - BORDER * 4);
         nctx.strokeStyle = c2.stroke;
         nctx.lineWidth = BORDER;
-        nctx.strokeRect(px + BORDER / 2, py + BORDER / 2, 30 - BORDER, 30 - BORDER);
+        nctx.strokeRect(px + BORDER / 2, py + BORDER / 2, BLOCK - BORDER, BLOCK - BORDER);
       }
     });
   });
@@ -226,7 +226,7 @@ function loop(ts) {
 
 // ── Controls ───────────────────────────────────────────────
 let lastDownTime = 0;
-const DOUBLE_TAP_MS = 125;
+const DOUBLE_TAP_MS = 200;
 
 document.addEventListener('keydown', e => {
   if (gameOver || paused) {
