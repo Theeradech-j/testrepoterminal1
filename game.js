@@ -225,6 +225,9 @@ function loop(ts) {
 }
 
 // ── Controls ───────────────────────────────────────────────
+let lastDownTime = 0;
+const DOUBLE_TAP_MS = 250;
+
 document.addEventListener('keydown', e => {
   if (gameOver || paused) {
     if (e.key === 'p' || e.key === 'P') togglePause();
@@ -237,27 +240,34 @@ document.addEventListener('keydown', e => {
     case 'ArrowRight':
       if (!collides(current.shape, current.x + 1, current.y)) current.x++;
       break;
-    case 'ArrowDown':
-      if (!collides(current.shape, current.x, current.y + 1)) {
-        current.y++;
-        score += 1;
+    case 'ArrowDown': {
+      const now = performance.now();
+      if (now - lastDownTime < DOUBLE_TAP_MS) {
+        // double tap → hard drop
+        e.preventDefault();
+        while (!collides(current.shape, current.x, current.y + 1)) {
+          current.y++;
+          score += 2;
+        }
         scoreEl.textContent = score;
+        lock();
+        lastDownTime = 0;
+      } else {
+        // single tap → soft drop
+        if (!collides(current.shape, current.x, current.y + 1)) {
+          current.y++;
+          score += 1;
+          scoreEl.textContent = score;
+        }
+        lastDownTime = now;
       }
       break;
+    }
     case 'ArrowUp': {
       const rotated = rotate(current.shape);
       if (!collides(rotated, current.x, current.y)) current.shape = rotated;
       break;
     }
-    case ' ':
-      e.preventDefault();
-      while (!collides(current.shape, current.x, current.y + 1)) {
-        current.y++;
-        score += 2;
-      }
-      scoreEl.textContent = score;
-      lock();
-      break;
     case 'p':
     case 'P':
       togglePause();

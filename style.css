@@ -7,15 +7,15 @@
 }
 
 body {
-  background: #f0e8ff;
+  background: #e8f9ee;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   font-family: 'Press Start 2P', monospace;
   background-image:
-    repeating-linear-gradient(0deg, rgba(200,180,255,0.15) 0px, rgba(200,180,255,0.15) 1px, transparent 1px, transparent 40px),
-    repeating-linear-gradient(90deg, rgba(200,180,255,0.15) 0px, rgba(200,180,255,0.15) 1px, transparent 1px, transparent 40px);
+    repeating-linear-gradient(0deg, rgba(160,220,180,0.18) 0px, rgba(160,220,180,0.18) 1px, transparent 1px, transparent 40px),
+    repeating-linear-gradient(90deg, rgba(160,220,180,0.18) 0px, rgba(160,220,180,0.18) 1px, transparent 1px, transparent 40px);
 }
 
 #app {
