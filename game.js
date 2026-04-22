@@ -143,7 +143,7 @@ function drawBlock(context, x, y, colorKey) {
 }
 
 function drawBoard() {
-  ctx.fillStyle = '#1a1030';
+  ctx.fillStyle = '#0d1a2e';
   ctx.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
 
   // grid lines
@@ -181,7 +181,7 @@ function drawBoard() {
 }
 
 function drawNext() {
-  nctx.fillStyle = '#1a1030';
+  nctx.fillStyle = '#0d1a2e';
   nctx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
   const offX = Math.floor((4 - next.shape[0].length) / 2);
   const offY = Math.floor((4 - next.shape.length) / 2);
