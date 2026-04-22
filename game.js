@@ -226,7 +226,7 @@ function loop(ts) {
 
 // ── Controls ───────────────────────────────────────────────
 let lastDownTime = 0;
-const DOUBLE_TAP_MS = 250;
+const DOUBLE_TAP_MS = 125;
 
 document.addEventListener('keydown', e => {
   if (gameOver || paused) {
@@ -317,4 +317,4 @@ overlayBtn.addEventListener('click', startGame);
 // Show start screen on load
 overlayText.innerHTML = 'PASTEL<br>TETRIS';
 overlayBtn.textContent = 'START';
-overlay.style.display = 'flex';
+overlay.classList.remove('hidden');
