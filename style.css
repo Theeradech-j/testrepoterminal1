@@ -87,7 +87,7 @@ body {
 }
 
 /* ── Sidebars ─────────────────────────────────────────────── */
-#sidebar {
+.sidebar {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -158,7 +158,7 @@ kbd {
     flex-direction: column;
     align-items: center;
   }
-  #sidebar {
+  .sidebar {
     flex-direction: row;
     width: auto;
   }

@@ -304,6 +304,7 @@ function endGame() {
 
 overlayBtn.addEventListener('click', startGame);
 
-// Show start screen
-overlayText.textContent = 'PASTEL\nTETRIS';
+// Show start screen on load
+overlayText.innerHTML = 'PASTEL<br>TETRIS';
 overlayBtn.textContent = 'START';
+overlay.style.display = 'flex';
