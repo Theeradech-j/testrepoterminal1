@@ -1,6 +1,6 @@
 const COLS = 10;
 const ROWS = 20;
-const BLOCK = 36;
+const BLOCK = 30;
 const BORDER = 3;
 
 // Pastel palette per piece type
@@ -226,7 +226,7 @@ function loop(ts) {
 
 // ── Controls ───────────────────────────────────────────────
 let lastDownTime = 0;
-const DOUBLE_TAP_MS = 200;
+const DOUBLE_TAP_MS = 300;
 
 document.addEventListener('keydown', e => {
   if (gameOver || paused) {
