@@ -226,7 +226,7 @@ function loop(ts) {
 
 // ── Controls ───────────────────────────────────────────────
 let lastDownTime = 0;
-const DOUBLE_TAP_MS = 300;
+const DOUBLE_TAP_MS = 400;
 
 document.addEventListener('keydown', e => {
   if (gameOver || paused) {
