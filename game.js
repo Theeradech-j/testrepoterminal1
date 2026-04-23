@@ -30,9 +30,36 @@ const PIECE_KEYS = Object.keys(PIECES);
 const SCORE_TABLE = [0, 100, 300, 500, 800];
 const BASE_SPEED = 800;
 
-// ── Touch detection ────────────────────────────────────────
-const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-if (isTouchDevice) document.body.classList.add('touch-ui');
+// ── Touch detection & layout switching ────────────────────
+const isTouchDevice = ('ontouchstart' in window) ||
+                      (navigator.maxTouchPoints > 0) ||
+                      (navigator.msMaxTouchPoints > 0);
+
+if (isTouchDevice) {
+  // Hide desktop sidebars
+  document.getElementById('side-left').style.display  = 'none';
+  document.getElementById('side-right').style.display = 'none';
+  // Flex column layout
+  const app = document.getElementById('app');
+  app.style.flexDirection = 'column';
+  app.style.alignItems    = 'center';
+  // Show mobile top bar
+  const mobileTop = document.getElementById('mobile-top');
+  mobileTop.style.display        = 'flex';
+  mobileTop.style.flexDirection  = 'row';
+  mobileTop.style.alignItems     = 'center';
+  mobileTop.style.gap            = '6px';
+  mobileTop.style.width          = '300px';
+  mobileTop.style.marginBottom   = '0';
+  // Show touch controls
+  const tc = document.getElementById('touch-controls');
+  tc.style.display        = 'flex';
+  tc.style.flexDirection  = 'column';
+  tc.style.alignItems     = 'center';
+  tc.style.gap            = '10px';
+  tc.style.marginTop      = '12px';
+  tc.style.paddingBottom  = '20px';
+}
 
 // ── Canvas setup ───────────────────────────────────────────
 const boardCanvas = document.getElementById('board');

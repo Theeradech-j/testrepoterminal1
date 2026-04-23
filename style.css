@@ -260,6 +260,7 @@ kbd {
   image-rendering: pixelated;
   width: 60px;
   height: 60px;
+  flex-shrink: 0;
 }
 
 /* Show touch controls */
