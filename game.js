@@ -314,6 +314,65 @@ function endGame() {
 
 overlayBtn.addEventListener('click', startGame);
 
+// ── Touch gestures on canvas ───────────────────────────────
+let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+
+function doMoveLeft()   { if (!collides(current.shape, current.x - 1, current.y)) current.x--; }
+function doMoveRight()  { if (!collides(current.shape, current.x + 1, current.y)) current.x++; }
+function doRotate()     { const r = rotate(current.shape); if (!collides(r, current.x, current.y)) current.shape = r; }
+function doSoftDrop()   { if (!collides(current.shape, current.x, current.y + 1)) { current.y++; score += 1; scoreEl.textContent = score; } }
+function doHardDrop()   { while (!collides(current.shape, current.x, current.y + 1)) { current.y++; score += 2; } scoreEl.textContent = score; lock(); }
+
+boardCanvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const t = e.touches[0];
+  touchStartX = t.clientX;
+  touchStartY = t.clientY;
+  touchStartTime = performance.now();
+}, { passive: false });
+
+boardCanvas.addEventListener('touchend', e => {
+  e.preventDefault();
+  if (gameOver || paused) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStartX;
+  const dy = t.clientY - touchStartY;
+  const dt = performance.now() - touchStartTime;
+  const absDx = Math.abs(dx), absDy = Math.abs(dy);
+
+  if (absDx < 12 && absDy < 12) {
+    doRotate();
+  } else if (absDx > absDy) {
+    const steps = Math.max(1, Math.round(absDx / 40));
+    for (let i = 0; i < steps; i++) dx > 0 ? doMoveRight() : doMoveLeft();
+  } else if (dy > 0) {
+    if (absDy > 80 && dt < 250) {
+      doHardDrop();
+    } else {
+      const steps = Math.max(1, Math.round(absDy / 40));
+      for (let i = 0; i < steps; i++) doSoftDrop();
+    }
+  } else {
+    doRotate();
+  }
+}, { passive: false });
+
+// ── On-screen touch buttons ────────────────────────────────
+function bindTouchBtn(id, action) {
+  const btn = document.getElementById(id);
+  if (!btn) return;
+  btn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (!gameOver && !paused) action();
+  }, { passive: false });
+}
+
+bindTouchBtn('btn-left',   doMoveLeft);
+bindTouchBtn('btn-right',  doMoveRight);
+bindTouchBtn('btn-rotate', doRotate);
+bindTouchBtn('btn-soft',   doSoftDrop);
+bindTouchBtn('btn-hard',   doHardDrop);
+
 // Show start screen on load
 overlayText.innerHTML = 'PASTEL<br>TETRIS';
 overlayBtn.textContent = 'START';

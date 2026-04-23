@@ -152,6 +152,51 @@ kbd {
   white-space: nowrap;
 }
 
+/* ── Touch controls ─────────────────────────────────────────── */
+#touch-controls {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  padding-bottom: 24px;
+}
+
+.touch-row {
+  display: flex;
+  gap: 10px;
+}
+
+.touch-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  width: 72px;
+  height: 72px;
+  background: #a8d8f0;
+  color: #0a2a45;
+  border: 3px solid #5a9cbe;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #3a7a9e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.touch-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #3a7a9e;
+}
+
+.touch-btn.wide {
+  width: 226px;
+  height: 56px;
+  font-size: 10px;
+}
+
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 600px) {
   #app {
@@ -161,5 +206,12 @@ kbd {
   .sidebar {
     flex-direction: row;
     width: auto;
+  }
+}
+
+/* Show touch controls on touch devices */
+@media (pointer: coarse) {
+  #touch-controls {
+    display: flex;
   }
 }

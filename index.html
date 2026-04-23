@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Pastel Tetris</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -44,6 +44,21 @@
         <div class="control-row"><kbd>↓↓</kbd> Hard drop</div>
         <div class="control-row"><kbd>P</kbd> Pause</div>
       </div>
+    </div>
+  </div>
+
+  <!-- Touch controls (shown only on touch devices) -->
+  <div id="touch-controls">
+    <div class="touch-row">
+      <button class="touch-btn" id="btn-rotate">&#8679; Rotate</button>
+    </div>
+    <div class="touch-row">
+      <button class="touch-btn" id="btn-left">&#8678;</button>
+      <button class="touch-btn" id="btn-soft">&#8681;</button>
+      <button class="touch-btn" id="btn-right">&#8680;</button>
+    </div>
+    <div class="touch-row">
+      <button class="touch-btn wide" id="btn-hard">&#9660;&#9660; HARD DROP</button>
     </div>
   </div>
 
