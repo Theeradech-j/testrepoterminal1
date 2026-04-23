@@ -7,22 +7,25 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="app">
-    <div class="sidebar">
-      <div class="panel-box">
+  <div id="wrapper">
+
+    <!-- Score/Level/Lines: left sidebar on desktop, top bar on mobile -->
+    <div id="stats-bar">
+      <div class="stat-item panel-box">
         <div class="panel-label">SCORE</div>
         <div class="panel-value" id="score">0</div>
       </div>
-      <div class="panel-box">
+      <div class="stat-item panel-box">
         <div class="panel-label">LEVEL</div>
         <div class="panel-value" id="level">1</div>
       </div>
-      <div class="panel-box">
+      <div class="stat-item panel-box">
         <div class="panel-label">LINES</div>
         <div class="panel-value" id="lines">0</div>
       </div>
     </div>
 
+    <!-- Game canvas -->
     <div id="game-area">
       <canvas id="board" width="300" height="600"></canvas>
       <div id="overlay">
@@ -31,12 +34,14 @@
       </div>
     </div>
 
-    <div class="sidebar">
+    <!-- Right panel: Next piece + keyboard controls -->
+    <div id="right-panel">
       <div class="panel-box">
         <div class="panel-label">NEXT</div>
         <canvas id="next-canvas" width="120" height="120"></canvas>
       </div>
-      <div class="panel-box controls-box">
+      <!-- Hidden on mobile -->
+      <div class="panel-box controls-box" id="keyboard-hint">
         <div class="panel-label">CONTROLS</div>
         <div class="control-row"><kbd>←→</kbd> Move</div>
         <div class="control-row"><kbd>↑</kbd> Rotate</div>
@@ -45,12 +50,13 @@
         <div class="control-row"><kbd>P</kbd> Pause</div>
       </div>
     </div>
+
   </div>
 
-  <!-- Touch controls (shown only on touch devices) -->
+  <!-- Touch controls: shown only on touch devices -->
   <div id="touch-controls">
     <div class="touch-row">
-      <button class="touch-btn" id="btn-rotate">&#8679; Rotate</button>
+      <button class="touch-btn" id="btn-rotate">&#8679;<br><span>Rotate</span></button>
     </div>
     <div class="touch-row">
       <button class="touch-btn" id="btn-left">&#8678;</button>
