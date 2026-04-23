@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tetris Admin Dashboard</title>
+  <style>
+    :root {
+      --blue:   #7ab8d8;
+      --dark:   #5a9cbe;
+      --text:   #0a3a5a;
+      --muted:  #5a8caa;
+      --card:   #ffffff;
+      --border: #d8eeff;
+      --bg:     #e8f4fb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Gate ─────────────────────────────────────────────────── */
+    #gate {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .gate-box {
+      background: var(--card);
+      border: 2px solid var(--blue);
+      border-radius: 14px;
+      padding: 40px 36px;
+      width: 340px;
+      box-shadow: 0 6px 32px rgba(90,156,190,0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+    }
+    .gate-emoji  { font-size: 40px; }
+    .gate-title  { font-size: 18px; font-weight: 700; color: var(--text); }
+    .gate-sub    { font-size: 13px; color: var(--muted); }
+    #pw-input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 2px solid var(--border);
+      border-radius: 7px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.15s;
+      color: var(--text);
+    }
+    #pw-input:focus { border-color: var(--blue); }
+    .btn {
+      padding: 10px 18px;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s;
+    }
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-primary:hover { background: var(--dark); }
+    .btn-outline { background: white; color: var(--dark); border: 2px solid var(--blue); }
+    .btn-outline:hover { background: var(--bg); }
+    #pw-btn { width: 100%; padding: 11px; }
+    #pw-err { color: #c00; font-size: 13px; min-height: 16px; }
+
+    /* ── Dashboard ────────────────────────────────────────────── */
+    #dashboard { display: none; }
+
+    header {
+      background: white;
+      border-bottom: 2px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    header h1 { font-size: 18px; color: var(--text); }
+    header a { color: var(--dark); text-decoration: none; font-size: 13px; }
+    header a:hover { text-decoration: underline; }
+    #refresh-btn { font-size: 13px; padding: 6px 12px; }
+    #last-updated { font-size: 11px; color: var(--muted); }
+
+    .container { padding: 24px 28px; max-width: 1500px; margin: 0 auto; }
+
+    /* ── Stats row ────────────────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .stat-card {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 16px;
+      box-shadow: 0 2px 8px rgba(90,156,190,0.07);
+    }
+    .stat-label { font-size: 10px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+    .stat-value { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1; }
+    .stat-sub   { font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+    /* ── Filters ──────────────────────────────────────────────── */
+    .filters {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    .filter-group { display: flex; flex-direction: column; gap: 4px; }
+    .filter-group label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+    .filter-group input, .filter-group select {
+      padding: 7px 11px;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      color: var(--text);
+      background: white;
+    }
+    .filter-group input:focus, .filter-group select:focus { border-color: var(--blue); }
+    .filter-actions { display: flex; gap: 8px; align-self: flex-end; }
+
+    /* ── Table ────────────────────────────────────────────────── */
+    .table-wrap {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(90,156,190,0.07);
+      margin-bottom: 14px;
+    }
+    .table-header-row {
+      padding: 12px 18px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .table-title { font-weight: 700; font-size: 14px; }
+    .table-count { font-size: 12px; color: var(--muted); }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 700px; }
+    thead th {
+      padding: 11px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      background: #fafeff;
+    }
+    thead th:hover { color: var(--text); background: #f0f8ff; }
+    thead th.sorted { color: var(--dark); background: #ebf5fc; }
+    thead th.sorted::after { content: ' ↓'; }
+    thead th.sorted.asc::after { content: ' ↑'; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.08s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f5fbff; }
+    tbody td { padding: 10px 14px; font-size: 13px; }
+    td code { font-family: monospace; font-size: 12px; color: var(--muted); }
+    .score-cell { font-weight: 700; color: var(--dark); }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #e5f4fb;
+      color: var(--dark);
+    }
+
+    /* ── Pagination ───────────────────────────────────────────── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px;
+    }
+    .page-btn {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text);
+      transition: all 0.1s;
+    }
+    .page-btn:hover:not(:disabled) { border-color: var(--blue); color: var(--dark); }
+    .page-btn.active { background: var(--blue); color: white; border-color: var(--blue); font-weight: 700; }
+    .page-btn:disabled { opacity: 0.35; cursor: default; }
+    .page-ellipsis { padding: 0 4px; color: var(--muted); font-size: 14px; }
+
+    /* ── States ───────────────────────────────────────────────── */
+    .loading { padding: 48px; text-align: center; color: var(--muted); font-size: 15px; }
+    .empty   { padding: 48px; text-align: center; color: var(--muted); font-size: 13px; }
+    .error   { padding: 48px; text-align: center; color: #c00; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Password Gate ─────────────────────────────────────────────────────────── -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-emoji">🎮</div>
+    <div class="gate-title">Tetris Admin</div>
+    <div class="gate-sub">Analytics Dashboard</div>
+    <input type="password" id="pw-input" placeholder="Enter admin password" />
+    <button class="btn btn-primary" id="pw-btn">Login →</button>
+    <div id="pw-err"></div>
+  </div>
+</div>
+
+<!-- ── Dashboard ─────────────────────────────────────────────────────────────── -->
+<div id="dashboard">
+  <header>
+    <div class="header-left">
+      <h1>🎮 Tetris Analytics</h1>
+      <span id="last-updated"></span>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn btn-outline" id="refresh-btn">↺ Refresh</button>
+      <a href="index.html">← Back to Game</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Stats -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card"><div class="stat-label">Total Games</div><div class="stat-value loading" style="font-size:16px;padding:8px 0">Loading…</div></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <label>From Date</label>
+        <input type="date" id="f-from" />
+      </div>
+      <div class="filter-group">
+        <label>To Date</label>
+        <input type="date" id="f-to" />
+      </div>
+      <div class="filter-group">
+        <label>Channel</label>
+        <select id="f-channel">
+          <option value="">All Channels</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Device</label>
+        <select id="f-device">
+          <option value="">All Devices</option>
+          <option value="Mobile">📱 Mobile</option>
+          <option value="Tablet">📟 Tablet</option>
+          <option value="Desktop">💻 Desktop</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>IP Address</label>
+        <input type="text" id="f-ip" placeholder="e.g. 192.168" style="width:140px" />
+      </div>
+      <div class="filter-actions">
+        <button class="btn btn-primary" onclick="applyFilters()">Filter</button>
+        <button class="btn btn-outline" onclick="clearFilters()">Clear</button>
+        <button class="btn btn-outline" onclick="exportCSV()">↓ CSV</button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div class="table-header-row">
+        <span class="table-title">Game Sessions</span>
+        <span class="table-count" id="table-count"></span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortBy('played_at')"        data-key="played_at">Date / Time</th>
+              <th onclick="sortBy('ip_address')"       data-key="ip_address">IP Address</th>
+              <th onclick="sortBy('channel')"          data-key="channel">Channel</th>
+              <th>Device</th>
+              <th onclick="sortBy('duration_seconds')" data-key="duration_seconds">Duration</th>
+              <th onclick="sortBy('score')"            data-key="score">Score</th>
+              <th onclick="sortBy('level')"            data-key="level">Level</th>
+              <th onclick="sortBy('lines')"            data-key="lines">Lines</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr><td colspan="8" class="loading">Loading sessions…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG — same values as tracker.js ──────────────────────────────────────
+const SUPABASE_URL      = 'https://baumerkzjvhfldwgboji.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhdW1lcmt6anZoZmxkd2dib2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5MjAzNTMsImV4cCI6MjA5MjQ5NjM1M30.jW-7WdA70rIR_lJi2T4xyApQAd9xpmdf54LXXdcvSDM';
+const ADMIN_PASSWORD    = 'tetris2026';
+
+const PAGE_SIZE = 20;
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let allRecords  = [];
+let filtered    = [];
+let sortKey     = 'played_at';
+let sortAsc     = false;
+let currentPage = 1;
+
+// ─── PASSWORD GATE ────────────────────────────────────────────────────────────
+function tryLogin() {
+  if (document.getElementById('pw-input').value === ADMIN_PASSWORD) {
+    document.getElementById('gate').style.display      = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadData();
+  } else {
+    document.getElementById('pw-err').textContent = 'Incorrect password';
+  }
+}
+document.getElementById('pw-btn').addEventListener('click', tryLogin);
+document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+document.getElementById('refresh-btn').addEventListener('click', loadData);
+
+// ─── FETCH DATA ───────────────────────────────────────────────────────────────
+async function loadData() {
+  document.getElementById('table-body').innerHTML =
+    '<tr><td colspan="8" class="loading">Loading sessions…</td></tr>';
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/game_sessions?select=*&order=played_at.desc&limit=5000`,
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+    );
+    if (!res.ok) throw new Error(`HTTP ${res.status} — check SUPABASE_URL and SUPABASE_ANON_KEY`);
+    allRecords = await res.json();
+
+    populateChannelFilter();
+    applyFilters();
+
+    const now = new Date().toLocaleTimeString('th-TH');
+    document.getElementById('last-updated').textContent = `Updated ${now}`;
+  } catch (err) {
+    document.getElementById('stats-row').innerHTML =
+      `<div class="stat-card"><div class="error">${err.message}</div></div>`;
+    document.getElementById('table-body').innerHTML =
+      `<tr><td colspan="8" class="error">❌ ${err.message}</td></tr>`;
+  }
+}
+
+// ─── STATS ────────────────────────────────────────────────────────────────────
+function renderStats(records) {
+  const total     = records.length;
+  const uniqueIPs = new Set(records.map(r => r.ip_address).filter(Boolean)).size;
+  const scores    = records.map(r => r.score || 0);
+  const avgScore  = total ? Math.round(scores.reduce((a, b) => a + b, 0) / total) : 0;
+  const maxScore  = total ? Math.max(...scores) : 0;
+  const today     = new Date().toDateString();
+  const todayCnt  = records.filter(r => new Date(r.played_at).toDateString() === today).length;
+  const durs      = records.filter(r => r.duration_seconds > 0).map(r => r.duration_seconds);
+  const avgDur    = durs.length ? Math.round(durs.reduce((a, b) => a + b, 0) / durs.length) : 0;
+
+  // Channel breakdown
+  const channelMap = {};
+  records.forEach(r => { const c = r.channel || 'Direct'; channelMap[c] = (channelMap[c] || 0) + 1; });
+  const topChannel = Object.entries(channelMap).sort((a, b) => b[1] - a[1])[0];
+
+  // Device breakdown
+  const devices = { Mobile: 0, Tablet: 0, Desktop: 0 };
+  records.forEach(r => { devices[detectDevice(r.user_agent)]++; });
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Total Games</div>
+      <div class="stat-value">${total.toLocaleString()}</div>
+      <div class="stat-sub">all time</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Unique Players</div>
+      <div class="stat-value">${uniqueIPs.toLocaleString()}</div>
+      <div class="stat-sub">by IP address</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Today's Games</div>
+      <div class="stat-value">${todayCnt}</div>
+      <div class="stat-sub">${new Date().toLocaleDateString('th-TH')}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Best Score</div>
+      <div class="stat-value">${maxScore.toLocaleString()}</div>
+      <div class="stat-sub">all time record</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg Score</div>
+      <div class="stat-value">${avgScore.toLocaleString()}</div>
+      <div class="stat-sub">per game</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg Duration</div>
+      <div class="stat-value">${fmtDuration(avgDur)}</div>
+      <div class="stat-sub">per game</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top Channel</div>
+      <div class="stat-value" style="font-size:16px;padding-top:4px">${topChannel ? topChannel[0] : '-'}</div>
+      <div class="stat-sub">${topChannel ? topChannel[1] + ' sessions' : ''}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">By Device</div>
+      <div class="stat-value" style="font-size:13px;padding-top:6px;line-height:1.8">
+        📱 ${devices.Mobile} &nbsp; 📟 ${devices.Tablet} &nbsp; 💻 ${devices.Desktop}
+      </div>
+      <div class="stat-sub">mobile / tablet / desktop</div>
+    </div>
+  `;
+}
+
+// ─── FILTERS ──────────────────────────────────────────────────────────────────
+function populateChannelFilter() {
+  const sel      = document.getElementById('f-channel');
+  const existing = new Set([...sel.options].map(o => o.value).filter(Boolean));
+  const channels = [...new Set(allRecords.map(r => r.channel).filter(Boolean))].sort();
+  channels.forEach(ch => {
+    if (!existing.has(ch)) {
+      const opt = document.createElement('option');
+      opt.value = opt.textContent = ch;
+      sel.appendChild(opt);
+    }
+  });
+}
+
+function applyFilters() {
+  const from    = document.getElementById('f-from').value;
+  const to      = document.getElementById('f-to').value;
+  const channel = document.getElementById('f-channel').value;
+  const device  = document.getElementById('f-device').value.replace(/📱|📟|💻\s*/g, '').trim();
+  const ip      = document.getElementById('f-ip').value.trim().toLowerCase();
+
+  filtered = allRecords.filter(r => {
+    const d = new Date(r.played_at);
+    if (from && d < new Date(from))                                return false;
+    if (to   && d > new Date(to + 'T23:59:59'))                   return false;
+    if (channel && r.channel !== channel)                          return false;
+    if (device  && detectDevice(r.user_agent) !== device)         return false;
+    if (ip && !(r.ip_address || '').toLowerCase().includes(ip))   return false;
+    return true;
+  });
+
+  doSort();
+  currentPage = 1;
+  renderStats(filtered);
+  renderTable();
+}
+
+function clearFilters() {
+  ['f-from','f-to','f-ip'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-channel').value = '';
+  document.getElementById('f-device').value  = '';
+  applyFilters();
+}
+
+// ─── SORT ─────────────────────────────────────────────────────────────────────
+function sortBy(key) {
+  sortAsc = (sortKey === key) ? !sortAsc : false;
+  sortKey = key;
+
+  document.querySelectorAll('thead th').forEach(th => th.classList.remove('sorted', 'asc'));
+  const th = document.querySelector(`thead th[data-key="${key}"]`);
+  if (th) { th.classList.add('sorted'); if (sortAsc) th.classList.add('asc'); }
+
+  doSort();
+  currentPage = 1;
+  renderTable();
+}
+
+function doSort() {
+  filtered.sort((a, b) => {
+    let av = a[sortKey], bv = b[sortKey];
+    if (typeof av === 'string') av = av.toLowerCase();
+    if (typeof bv === 'string') bv = bv.toLowerCase();
+    if (av === null || av === undefined) return 1;
+    if (bv === null || bv === undefined) return -1;
+    if (av < bv) return sortAsc ? -1 : 1;
+    if (av > bv) return sortAsc ?  1 : -1;
+    return 0;
+  });
+}
+
+// ─── RENDER TABLE ─────────────────────────────────────────────────────────────
+function renderTable() {
+  const total = filtered.length;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page  = filtered.slice(start, start + PAGE_SIZE);
+  const totalPages = Math.ceil(total / PAGE_SIZE) || 1;
+
+  document.getElementById('table-count').textContent =
+    total === allRecords.length ? `${total} records` : `${total} / ${allRecords.length} records`;
+
+  if (!page.length) {
+    document.getElementById('table-body').innerHTML =
+      '<tr><td colspan="8" class="empty">No sessions found</td></tr>';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  document.getElementById('table-body').innerHTML = page.map(r => `
+    <tr>
+      <td>${fmtDate(r.played_at)}</td>
+      <td><code>${r.ip_address || '-'}</code></td>
+      <td><span class="badge">${r.channel || 'Direct'}</span></td>
+      <td>${detectDeviceIcon(r.user_agent)}</td>
+      <td>${fmtDuration(r.duration_seconds)}</td>
+      <td class="score-cell">${(r.score || 0).toLocaleString()}</td>
+      <td>${r.level || 1}</td>
+      <td>${r.lines || 0}</td>
+    </tr>
+  `).join('');
+
+  renderPagination(totalPages);
+}
+
+function renderPagination(totalPages) {
+  if (totalPages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
+
+  let pages = [];
+  if (totalPages <= 7) {
+    pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  } else {
+    pages = [1];
+    if (currentPage > 3)              pages.push('…');
+    const lo = Math.max(2, currentPage - 1);
+    const hi = Math.min(totalPages - 1, currentPage + 1);
+    for (let i = lo; i <= hi; i++)    pages.push(i);
+    if (currentPage < totalPages - 2) pages.push('…');
+    pages.push(totalPages);
+  }
+
+  const prev = `<button class="page-btn" onclick="gotoPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
+  const next = `<button class="page-btn" onclick="gotoPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
+  const btns = pages.map(p =>
+    p === '…'
+      ? `<span class="page-ellipsis">…</span>`
+      : `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="gotoPage(${p})">${p}</button>`
+  ).join('');
+
+  document.getElementById('pagination').innerHTML = prev + btns + next;
+}
+
+function gotoPage(n) {
+  currentPage = n;
+  renderTable();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── CSV EXPORT ───────────────────────────────────────────────────────────────
+function exportCSV() {
+  const headers = ['Date/Time', 'IP', 'Channel', 'Device', 'Duration(s)', 'Score', 'Level', 'Lines'];
+  const rows = filtered.map(r => [
+    r.played_at || '',
+    r.ip_address || '',
+    r.channel || '',
+    detectDevice(r.user_agent),
+    r.duration_seconds || 0,
+    r.score || 0,
+    r.level || 1,
+    r.lines || 0,
+  ]);
+  const csv = [headers, ...rows]
+    .map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+  const a    = Object.assign(document.createElement('a'), {
+    href:     URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })),
+    download: `tetris-${new Date().toISOString().slice(0, 10)}.csv`,
+  });
+  a.click();
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function detectDevice(ua = '') {
+  if (/iPhone|Android.*Mobile|BlackBerry|IEMobile/.test(ua)) return 'Mobile';
+  if (/iPad|Android(?!.*Mobile)|Tablet/.test(ua))            return 'Tablet';
+  return 'Desktop';
+}
+function detectDeviceIcon(ua = '') {
+  const d = detectDevice(ua);
+  return d === 'Mobile' ? '📱 Mobile' : d === 'Tablet' ? '📟 Tablet' : '💻 Desktop';
+}
+function fmtDuration(sec) {
+  if (!sec || sec <= 0) return '-';
+  const m = Math.floor(sec / 60), s = sec % 60;
+  return m > 0 ? `${m}m ${s}s` : `${s}s`;
+}
+function fmtDate(iso) {
+  if (!iso) return '-';
+  return new Date(iso).toLocaleString('th-TH', {
+    year: '2-digit', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+  });
+}
+</script>
+</body>
+</html>

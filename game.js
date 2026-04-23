@@ -57,7 +57,7 @@ function setLevel(v) { levelEl.textContent = v; if (levelMEl) levelMEl.textConte
 function setLines(v) { linesEl.textContent = v; if (linesMEl) linesMEl.textContent = v; }
 
 // ── State ──────────────────────────────────────────────────
-let board, current, next, score, level, lines, paused, gameOver, dropTimer, dropInterval, animId;
+let board, current, next, score, level, lines, paused, gameOver, dropTimer, dropInterval, animId, gameStartTime;
 
 function newBoard() {
   return Array.from({ length: ROWS }, () => Array(COLS).fill(null));
@@ -312,6 +312,7 @@ function startGame() {
   score = 0; level = 1; lines = 0;
   dropTimer = 0; dropInterval = BASE_SPEED;
   paused = false; gameOver = false;
+  gameStartTime = Date.now();
   setScore(0); setLevel(1); setLines(0);
   current = randomPiece();
   next = randomPiece();
@@ -326,6 +327,8 @@ function endGame() {
   overlayText.innerHTML = 'GAME OVER\n\nSCORE: ' + score;
   overlayBtn.textContent = 'PLAY AGAIN';
   overlay.classList.remove('hidden');
+  const duration = Math.floor((Date.now() - gameStartTime) / 1000);
+  if (typeof logGameSession === 'function') logGameSession({ score, level, lines, duration });
 }
 
 overlayBtn.addEventListener('click', startGame);
