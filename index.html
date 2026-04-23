@@ -7,41 +7,67 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="wrapper">
+  <div id="app">
 
-    <!-- Score/Level/Lines: left sidebar on desktop, top bar on mobile -->
-    <div id="stats-bar">
-      <div class="stat-item panel-box">
+    <!-- Desktop only: left sidebar -->
+    <div id="side-left">
+      <div class="panel-box">
         <div class="panel-label">SCORE</div>
         <div class="panel-value" id="score">0</div>
       </div>
-      <div class="stat-item panel-box">
+      <div class="panel-box">
         <div class="panel-label">LEVEL</div>
         <div class="panel-value" id="level">1</div>
       </div>
-      <div class="stat-item panel-box">
+      <div class="panel-box">
         <div class="panel-label">LINES</div>
         <div class="panel-value" id="lines">0</div>
       </div>
     </div>
 
-    <!-- Game canvas -->
-    <div id="game-area">
-      <canvas id="board" width="300" height="600"></canvas>
-      <div id="overlay">
-        <div id="overlay-text"></div>
-        <button id="overlay-btn">START</button>
+    <!-- Center column -->
+    <div id="center-col">
+
+      <!-- Mobile only: compact top bar (stats + next piece) -->
+      <div id="mobile-top">
+        <div id="mini-stats">
+          <div class="mini-stat">
+            <div class="mini-label">SCORE</div>
+            <div class="mini-value" id="score-m">0</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-label">LEVEL</div>
+            <div class="mini-value" id="level-m">1</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-label">LINES</div>
+            <div class="mini-value" id="lines-m">0</div>
+          </div>
+        </div>
+        <div id="mini-next">
+          <div class="mini-label">NEXT</div>
+          <canvas id="next-canvas-mobile" width="80" height="80"></canvas>
+        </div>
       </div>
+
+      <!-- Game canvas -->
+      <div id="game-area">
+        <canvas id="board" width="300" height="600"></canvas>
+        <div id="overlay">
+          <div id="overlay-text"></div>
+          <button id="overlay-btn">START</button>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Right panel: Next piece + keyboard controls -->
-    <div id="right-panel">
+    <!-- Desktop only: right sidebar -->
+    <div id="side-right">
       <div class="panel-box">
         <div class="panel-label">NEXT</div>
         <canvas id="next-canvas" width="120" height="120"></canvas>
       </div>
-      <!-- Hidden on mobile -->
-      <div class="panel-box controls-box" id="keyboard-hint">
+      <div class="panel-box controls-box">
         <div class="panel-label">CONTROLS</div>
         <div class="control-row"><kbd>←→</kbd> Move</div>
         <div class="control-row"><kbd>↑</kbd> Rotate</div>
@@ -53,10 +79,10 @@
 
   </div>
 
-  <!-- Touch controls: shown only on touch devices -->
+  <!-- Touch controls: shown only on touch devices via JS -->
   <div id="touch-controls">
     <div class="touch-row">
-      <button class="touch-btn" id="btn-rotate">&#8679;<br><span>Rotate</span></button>
+      <button class="touch-btn" id="btn-rotate">&#8679;</button>
     </div>
     <div class="touch-row">
       <button class="touch-btn" id="btn-left">&#8678;</button>

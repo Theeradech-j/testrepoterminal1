@@ -1,10 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   background: #e8f9ee;
@@ -19,31 +15,36 @@ body {
     repeating-linear-gradient(90deg, rgba(160,220,180,0.18) 0px, rgba(160,220,180,0.18) 1px, transparent 1px, transparent 40px);
 }
 
-/* ── Layout wrapper ──────────────────────────────────────── */
-#wrapper {
+/* ══════════════════════════════════════════
+   DESKTOP LAYOUT (default)
+══════════════════════════════════════════ */
+#app {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   gap: 16px;
 }
 
-/* ── Stats bar (desktop = left column) ───────────────────── */
-#stats-bar {
+#side-left, #side-right {
   display: flex;
   flex-direction: column;
   gap: 12px;
   width: 140px;
 }
 
-/* ── Right panel (desktop = right column) ────────────────── */
-#right-panel {
+#center-col {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  width: 140px;
+  align-items: center;
 }
 
-/* ── Shared panel box ────────────────────────────────────── */
+/* Mobile top bar hidden on desktop */
+#mobile-top { display: none; }
+
+/* Touch controls hidden on desktop */
+#touch-controls { display: none; }
+
+/* ── Panel boxes ─────────────────────────────────────────── */
 .panel-box {
   background: #f0f8ff;
   border: 3px solid #7ab8d8;
@@ -77,13 +78,9 @@ body {
   box-shadow: 6px 6px 0 #5a9cbe;
   background: #0d1a2e;
   overflow: hidden;
-  flex-shrink: 0;
 }
 
-#board {
-  display: block;
-  image-rendering: pixelated;
-}
+#board { display: block; image-rendering: pixelated; }
 
 /* ── Overlay ─────────────────────────────────────────────── */
 #overlay {
@@ -97,9 +94,7 @@ body {
   gap: 24px;
 }
 
-#overlay.hidden {
-  display: none;
-}
+#overlay.hidden { display: none; }
 
 #overlay-text {
   color: #d6eeff;
@@ -122,17 +117,10 @@ body {
   transition: transform 0.1s, box-shadow 0.1s;
 }
 
-#overlay-btn:hover {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 #3a7a9e;
-}
+#overlay-btn:hover { transform: translate(2px,2px); box-shadow: 2px 2px 0 #3a7a9e; }
+#overlay-btn:active { transform: translate(4px,4px); box-shadow: none; }
 
-#overlay-btn:active {
-  transform: translate(4px, 4px);
-  box-shadow: none;
-}
-
-/* ── Next canvas ─────────────────────────────────────────── */
+/* ── Next canvas (desktop) ───────────────────────────────── */
 #next-canvas {
   display: block;
   background: #0d1a2e;
@@ -141,10 +129,7 @@ body {
 }
 
 /* ── Keyboard controls hint ──────────────────────────────── */
-.controls-box {
-  align-items: flex-start;
-  gap: 6px;
-}
+.controls-box { align-items: flex-start; gap: 6px; }
 
 .control-row {
   font-size: 7px;
@@ -166,24 +151,12 @@ kbd {
   white-space: nowrap;
 }
 
-/* ── Touch controls (hidden on desktop) ──────────────────── */
-#touch-controls {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin-top: 14px;
-  padding-bottom: 24px;
-}
-
-.touch-row {
-  display: flex;
-  gap: 10px;
-}
+/* ── Touch buttons ───────────────────────────────────────── */
+.touch-row { display: flex; gap: 10px; }
 
 .touch-btn {
   font-family: 'Press Start 2P', monospace;
-  font-size: 18px;
+  font-size: 22px;
   width: 76px;
   height: 76px;
   background: #a8d8f0;
@@ -193,88 +166,108 @@ kbd {
   cursor: pointer;
   box-shadow: 0 5px 0 #3a7a9e;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   transition: transform 0.08s, box-shadow 0.08s;
-  line-height: 1.2;
 }
 
-.touch-btn span {
-  font-size: 6px;
-  margin-top: 2px;
-}
-
-.touch-btn:active {
-  transform: translateY(4px);
-  box-shadow: 0 1px 0 #3a7a9e;
-}
+.touch-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #3a7a9e; }
 
 .touch-btn.wide {
   width: 242px;
-  height: 56px;
-  font-size: 10px;
+  height: 60px;
+  font-size: 11px;
 }
 
-/* ── Mobile / Touch layout ───────────────────────────────── */
-@media (pointer: coarse), (max-width: 540px) {
+/* ══════════════════════════════════════════
+   TOUCH / MOBILE LAYOUT  (.touch-ui on body)
+══════════════════════════════════════════ */
+.touch-ui {
+  padding: 8px;
+  justify-content: flex-start;
+}
 
-  body {
-    padding: 12px 8px;
-    justify-content: flex-start;
-  }
+.touch-ui #app {
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
 
-  #wrapper {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-  }
+/* Hide desktop sidebars */
+.touch-ui #side-left,
+.touch-ui #side-right { display: none; }
 
-  /* Stats become a compact top bar */
-  #stats-bar {
-    flex-direction: row;
-    width: auto;
-    gap: 8px;
-    order: -1;
-  }
+/* Show mobile top bar */
+.touch-ui #mobile-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  width: 300px;
+}
 
-  .stat-item {
-    padding: 6px 10px;
-    gap: 4px;
-    min-width: 70px;
-    box-shadow: 2px 2px 0 #5a9cbe;
-  }
+/* Stats row */
+#mini-stats {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  flex: 1;
+}
 
-  .panel-label {
-    font-size: 6px;
-  }
+.mini-stat {
+  background: #f0f8ff;
+  border: 2px solid #7ab8d8;
+  border-radius: 5px;
+  box-shadow: 2px 2px 0 #5a9cbe;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+}
 
-  .panel-value {
-    font-size: 13px;
-    min-width: unset;
-  }
+.mini-label {
+  font-size: 5px;
+  color: #5a8caa;
+  letter-spacing: 1px;
+}
 
-  /* Right panel: show next piece only, hide keyboard hint */
-  #right-panel {
-    flex-direction: row;
-    width: auto;
-    align-items: flex-start;
-  }
+.mini-value {
+  font-size: 11px;
+  color: #0a3a5a;
+}
 
-  #keyboard-hint {
-    display: none;
-  }
+/* Next piece mini */
+#mini-next {
+  background: #f0f8ff;
+  border: 2px solid #7ab8d8;
+  border-radius: 5px;
+  box-shadow: 2px 2px 0 #5a9cbe;
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
 
-  #next-canvas {
-    width: 80px;
-    height: 80px;
-  }
+#next-canvas-mobile {
+  display: block;
+  background: #0d1a2e;
+  border-radius: 2px;
+  image-rendering: pixelated;
+  width: 60px;
+  height: 60px;
+}
 
-  /* Touch buttons appear */
-  #touch-controls {
-    display: flex;
-  }
+/* Show touch controls */
+.touch-ui #touch-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding-bottom: 20px;
 }

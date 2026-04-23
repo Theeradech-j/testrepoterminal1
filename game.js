@@ -30,18 +30,31 @@ const PIECE_KEYS = Object.keys(PIECES);
 const SCORE_TABLE = [0, 100, 300, 500, 800];
 const BASE_SPEED = 800;
 
+// ── Touch detection ────────────────────────────────────────
+const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+if (isTouchDevice) document.body.classList.add('touch-ui');
+
 // ── Canvas setup ───────────────────────────────────────────
 const boardCanvas = document.getElementById('board');
 const ctx = boardCanvas.getContext('2d');
 const nextCanvas = document.getElementById('next-canvas');
 const nctx = nextCanvas.getContext('2d');
+const nextCanvasMobile = document.getElementById('next-canvas-mobile');
+const nctxMobile = nextCanvasMobile ? nextCanvasMobile.getContext('2d') : null;
 
-const scoreEl = document.getElementById('score');
-const levelEl = document.getElementById('level');
-const linesEl = document.getElementById('lines');
-const overlay = document.getElementById('overlay');
+const scoreEl  = document.getElementById('score');
+const levelEl  = document.getElementById('level');
+const linesEl  = document.getElementById('lines');
+const scoreMEl = document.getElementById('score-m');
+const levelMEl = document.getElementById('level-m');
+const linesMEl = document.getElementById('lines-m');
+const overlay  = document.getElementById('overlay');
 const overlayText = document.getElementById('overlay-text');
-const overlayBtn = document.getElementById('overlay-btn');
+const overlayBtn  = document.getElementById('overlay-btn');
+
+function setScore(v) { scoreEl.textContent = v; if (scoreMEl) scoreMEl.textContent = v; }
+function setLevel(v) { levelEl.textContent = v; if (levelMEl) levelMEl.textContent = v; }
+function setLines(v) { linesEl.textContent = v; if (linesMEl) linesMEl.textContent = v; }
 
 // ── State ──────────────────────────────────────────────────
 let board, current, next, score, level, lines, paused, gameOver, dropTimer, dropInterval, animId;
@@ -111,9 +124,7 @@ function clearLines() {
     score += SCORE_TABLE[cleared] * level;
     level = Math.floor(lines / 10) + 1;
     dropInterval = Math.max(100, BASE_SPEED - (level - 1) * 70);
-    scoreEl.textContent = score;
-    levelEl.textContent = level;
-    linesEl.textContent = lines;
+    setScore(score); setLevel(level); setLines(lines);
   }
 }
 
@@ -180,26 +191,33 @@ function drawBoard() {
   });
 }
 
-function drawNext() {
-  nctx.fillStyle = '#0d1a2e';
-  nctx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+function drawNextOnCtx(context, cw, ch) {
+  const cell = Math.floor(Math.min(cw, ch) / 4);
+  const b = Math.max(2, Math.floor(cell / 10));
+  context.fillStyle = '#0d1a2e';
+  context.fillRect(0, 0, cw, ch);
   const offX = Math.floor((4 - next.shape[0].length) / 2);
   const offY = Math.floor((4 - next.shape.length) / 2);
   next.shape.forEach((row, r) => {
     row.forEach((v, c) => {
       if (v) {
         const c2 = COLORS[next.color];
-        const px = (offX + c) * BLOCK, py = (offY + r) * BLOCK;
-        nctx.fillStyle = c2.fill;
-        nctx.fillRect(px, py, BLOCK, BLOCK);
-        nctx.fillStyle = c2.inner;
-        nctx.fillRect(px + BORDER * 2, py + BORDER * 2, BLOCK - BORDER * 4, BLOCK - BORDER * 4);
-        nctx.strokeStyle = c2.stroke;
-        nctx.lineWidth = BORDER;
-        nctx.strokeRect(px + BORDER / 2, py + BORDER / 2, BLOCK - BORDER, BLOCK - BORDER);
+        const px = (offX + c) * cell, py = (offY + r) * cell;
+        context.fillStyle = c2.fill;
+        context.fillRect(px, py, cell, cell);
+        context.fillStyle = c2.inner;
+        context.fillRect(px + b * 2, py + b * 2, cell - b * 4, cell - b * 4);
+        context.strokeStyle = c2.stroke;
+        context.lineWidth = b;
+        context.strokeRect(px + b / 2, py + b / 2, cell - b, cell - b);
       }
     });
   });
+}
+
+function drawNext() {
+  drawNextOnCtx(nctx, nextCanvas.width, nextCanvas.height);
+  if (nctxMobile) drawNextOnCtx(nctxMobile, nextCanvasMobile.width, nextCanvasMobile.height);
 }
 
 // ── Game loop ──────────────────────────────────────────────
@@ -249,7 +267,7 @@ document.addEventListener('keydown', e => {
           current.y++;
           score += 2;
         }
-        scoreEl.textContent = score;
+        setScore(score);
         lock();
         lastDownTime = 0;
       } else {
@@ -257,7 +275,7 @@ document.addEventListener('keydown', e => {
         if (!collides(current.shape, current.x, current.y + 1)) {
           current.y++;
           score += 1;
-          scoreEl.textContent = score;
+          setScore(score);
         }
         lastDownTime = now;
       }
@@ -294,9 +312,7 @@ function startGame() {
   score = 0; level = 1; lines = 0;
   dropTimer = 0; dropInterval = BASE_SPEED;
   paused = false; gameOver = false;
-  scoreEl.textContent = 0;
-  levelEl.textContent = 1;
-  linesEl.textContent = 0;
+  setScore(0); setLevel(1); setLines(0);
   current = randomPiece();
   next = randomPiece();
   overlay.classList.add('hidden');
@@ -320,8 +336,8 @@ let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
 function doMoveLeft()   { if (!collides(current.shape, current.x - 1, current.y)) current.x--; }
 function doMoveRight()  { if (!collides(current.shape, current.x + 1, current.y)) current.x++; }
 function doRotate()     { const r = rotate(current.shape); if (!collides(r, current.x, current.y)) current.shape = r; }
-function doSoftDrop()   { if (!collides(current.shape, current.x, current.y + 1)) { current.y++; score += 1; scoreEl.textContent = score; } }
-function doHardDrop()   { while (!collides(current.shape, current.x, current.y + 1)) { current.y++; score += 2; } scoreEl.textContent = score; lock(); }
+function doSoftDrop()   { if (!collides(current.shape, current.x, current.y + 1)) { current.y++; score += 1; setScore(score); } }
+function doHardDrop()   { while (!collides(current.shape, current.x, current.y + 1)) { current.y++; score += 2; } setScore(score); lock(); }
 
 boardCanvas.addEventListener('touchstart', e => {
   e.preventDefault();
