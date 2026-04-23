@@ -6,8 +6,8 @@ body {
   background: #e8f9ee;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   min-height: 100vh;
   font-family: 'Press Start 2P', monospace;
   background-image:
@@ -15,9 +15,12 @@ body {
     repeating-linear-gradient(90deg, rgba(160,220,180,0.18) 0px, rgba(160,220,180,0.18) 1px, transparent 1px, transparent 40px);
 }
 
-/* ══════════════════════════════════════════
-   DESKTOP LAYOUT (default)
-══════════════════════════════════════════ */
+/* ═══════════════════════════════════════
+   DESKTOP LAYOUT
+═══════════════════════════════════════ */
+#mobile-top    { display: none; }
+#touch-controls { display: none; }
+
 #app {
   display: flex;
   flex-direction: row;
@@ -32,19 +35,7 @@ body {
   width: 140px;
 }
 
-#center-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Mobile top bar hidden on desktop */
-#mobile-top { display: none; }
-
-/* Touch controls hidden on desktop */
-#touch-controls { display: none; }
-
-/* ── Panel boxes ─────────────────────────────────────────── */
+/* ── Shared panel boxes ───────────────────────────────────── */
 .panel-box {
   background: #f0f8ff;
   border: 3px solid #7ab8d8;
@@ -57,20 +48,10 @@ body {
   gap: 8px;
 }
 
-.panel-label {
-  font-size: 8px;
-  color: #5a8caa;
-  letter-spacing: 1px;
-}
+.panel-label { font-size: 8px; color: #5a8caa; letter-spacing: 1px; }
+.panel-value { font-size: 18px; color: #0a3a5a; min-width: 80px; text-align: center; }
 
-.panel-value {
-  font-size: 18px;
-  color: #0a3a5a;
-  min-width: 80px;
-  text-align: center;
-}
-
-/* ── Game board ──────────────────────────────────────────── */
+/* ── Game area ───────────────────────────────────────────── */
 #game-area {
   position: relative;
   border: 4px solid #7ab8d8;
@@ -78,77 +59,51 @@ body {
   box-shadow: 6px 6px 0 #5a9cbe;
   background: #0d1a2e;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 #board { display: block; image-rendering: pixelated; }
 
 /* ── Overlay ─────────────────────────────────────────────── */
 #overlay {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background: rgba(8, 20, 45, 0.84);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
   gap: 24px;
 }
-
 #overlay.hidden { display: none; }
 
 #overlay-text {
-  color: #d6eeff;
-  font-size: 14px;
-  text-align: center;
-  line-height: 2;
+  color: #d6eeff; font-size: 14px;
+  text-align: center; line-height: 2;
   text-shadow: 2px 2px 0 #4a90b8;
 }
 
 #overlay-btn {
   font-family: 'Press Start 2P', monospace;
-  font-size: 12px;
-  padding: 12px 24px;
-  background: #a8d8f0;
-  color: #0a2a45;
-  border: 3px solid #5a9cbe;
-  border-radius: 4px;
-  cursor: pointer;
-  box-shadow: 4px 4px 0 #3a7a9e;
+  font-size: 12px; padding: 12px 24px;
+  background: #a8d8f0; color: #0a2a45;
+  border: 3px solid #5a9cbe; border-radius: 4px;
+  cursor: pointer; box-shadow: 4px 4px 0 #3a7a9e;
   transition: transform 0.1s, box-shadow 0.1s;
 }
-
-#overlay-btn:hover { transform: translate(2px,2px); box-shadow: 2px 2px 0 #3a7a9e; }
+#overlay-btn:hover  { transform: translate(2px,2px); box-shadow: 2px 2px 0 #3a7a9e; }
 #overlay-btn:active { transform: translate(4px,4px); box-shadow: none; }
 
-/* ── Next canvas (desktop) ───────────────────────────────── */
+/* ── Desktop next canvas ─────────────────────────────────── */
 #next-canvas {
-  display: block;
-  background: #0d1a2e;
-  border-radius: 3px;
-  image-rendering: pixelated;
+  display: block; background: #0d1a2e;
+  border-radius: 3px; image-rendering: pixelated;
 }
 
-/* ── Keyboard controls hint ──────────────────────────────── */
+/* ── Keyboard controls ───────────────────────────────────── */
 .controls-box { align-items: flex-start; gap: 6px; }
-
-.control-row {
-  font-size: 7px;
-  color: #5a7a90;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
+.control-row  { font-size: 7px; color: #5a7a90; display: flex; align-items: center; gap: 6px; }
 kbd {
-  background: #d8eeff;
-  border: 2px solid #7ab8d8;
-  border-radius: 3px;
-  padding: 2px 5px;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 6px;
-  color: #1a4a6a;
-  box-shadow: 2px 2px 0 #5a9cbe;
-  white-space: nowrap;
+  background: #d8eeff; border: 2px solid #7ab8d8; border-radius: 3px;
+  padding: 2px 5px; font-family: 'Press Start 2P', monospace;
+  font-size: 6px; color: #1a4a6a; box-shadow: 2px 2px 0 #5a9cbe; white-space: nowrap;
 }
 
 /* ── Touch buttons ───────────────────────────────────────── */
@@ -156,119 +111,99 @@ kbd {
 
 .touch-btn {
   font-family: 'Press Start 2P', monospace;
-  font-size: 22px;
-  width: 76px;
-  height: 76px;
-  background: #a8d8f0;
-  color: #0a2a45;
-  border: 3px solid #5a9cbe;
-  border-radius: 10px;
-  cursor: pointer;
-  box-shadow: 0 5px 0 #3a7a9e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
+  font-size: 24px; width: 76px; height: 76px;
+  background: #a8d8f0; color: #0a2a45;
+  border: 3px solid #5a9cbe; border-radius: 10px;
+  cursor: pointer; box-shadow: 0 5px 0 #3a7a9e;
+  display: flex; align-items: center; justify-content: center;
+  user-select: none; -webkit-tap-highlight-color: transparent;
   transition: transform 0.08s, box-shadow 0.08s;
 }
-
 .touch-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #3a7a9e; }
+.touch-btn.wide   { width: 242px; height: 60px; font-size: 20px; }
 
-.touch-btn.wide {
-  width: 242px;
-  height: 60px;
-  font-size: 11px;
-}
+/* ═══════════════════════════════════════
+   MOBILE LAYOUT  (pointer:coarse OR narrow)
+═══════════════════════════════════════ */
+@media (pointer: coarse), (max-width: 540px) {
 
-/* ══════════════════════════════════════════
-   TOUCH / MOBILE LAYOUT  (.touch-ui on body)
-══════════════════════════════════════════ */
-.touch-ui {
-  padding: 8px;
-  justify-content: flex-start;
-}
+  body { justify-content: flex-start; padding: 8px 0 0; }
 
-.touch-ui #app {
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
+  /* Show mobile top bar */
+  #mobile-top {
+    display: flex !important;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 6px;
+    width: 308px;
+    margin-bottom: 6px;
+  }
 
-/* Hide desktop sidebars */
-.touch-ui #side-left,
-.touch-ui #side-right { display: none; }
+  /* Stats: three boxes side by side */
+  #mini-stats {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    flex: 1;
+  }
 
-/* Show mobile top bar */
-.touch-ui #mobile-top {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-  width: 300px;
-}
+  .mini-stat {
+    background: #f0f8ff;
+    border: 2px solid #7ab8d8;
+    border-radius: 5px;
+    box-shadow: 2px 2px 0 #5a9cbe;
+    padding: 4px 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex: 1;
+  }
 
-/* Stats row */
-#mini-stats {
-  display: flex;
-  flex-direction: row;
-  gap: 6px;
-  flex: 1;
-}
+  .mini-label { font-size: 5px; color: #5a8caa; letter-spacing: 1px; }
+  .mini-value { font-size: 12px; color: #0a3a5a; }
 
-.mini-stat {
-  background: #f0f8ff;
-  border: 2px solid #7ab8d8;
-  border-radius: 5px;
-  box-shadow: 2px 2px 0 #5a9cbe;
-  padding: 4px 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  flex: 1;
-}
+  /* Next piece compact box */
+  #mini-next {
+    background: #f0f8ff;
+    border: 2px solid #7ab8d8;
+    border-radius: 5px;
+    box-shadow: 2px 2px 0 #5a9cbe;
+    padding: 4px 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+  }
 
-.mini-label {
-  font-size: 5px;
-  color: #5a8caa;
-  letter-spacing: 1px;
-}
+  #next-canvas-mobile {
+    display: block;
+    width: 56px; height: 56px;
+    background: #0d1a2e;
+    border-radius: 2px;
+    image-rendering: pixelated;
+  }
 
-.mini-value {
-  font-size: 11px;
-  color: #0a3a5a;
-}
+  /* Hide desktop sidebars */
+  #side-left  { display: none !important; }
+  #side-right { display: none !important; }
 
-/* Next piece mini */
-#mini-next {
-  background: #f0f8ff;
-  border: 2px solid #7ab8d8;
-  border-radius: 5px;
-  box-shadow: 2px 2px 0 #5a9cbe;
-  padding: 4px 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-}
+  /* Stack game centered */
+  #app {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0 !important;
+  }
 
-#next-canvas-mobile {
-  display: block;
-  background: #0d1a2e;
-  border-radius: 2px;
-  image-rendering: pixelated;
-  width: 60px;
-  height: 60px;
-  flex-shrink: 0;
-}
-
-/* Show touch controls */
-.touch-ui #touch-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin-top: 12px;
-  padding-bottom: 20px;
+  /* Show touch controls */
+  #touch-controls {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding-bottom: 24px;
+  }
 }

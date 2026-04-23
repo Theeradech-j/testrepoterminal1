@@ -7,61 +7,40 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- MOBILE TOP BAR: stats + next piece (hidden on desktop) -->
+  <div id="mobile-top">
+    <div id="mini-stats">
+      <div class="mini-stat"><div class="mini-label">SC</div><div class="mini-value" id="score-m">0</div></div>
+      <div class="mini-stat"><div class="mini-label">LV</div><div class="mini-value" id="level-m">1</div></div>
+      <div class="mini-stat"><div class="mini-label">LN</div><div class="mini-value" id="lines-m">0</div></div>
+    </div>
+    <div id="mini-next">
+      <div class="mini-label">NEXT</div>
+      <canvas id="next-canvas-mobile" width="60" height="60"></canvas>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
   <div id="app">
 
-    <!-- Desktop only: left sidebar -->
+    <!-- Desktop left sidebar -->
     <div id="side-left">
-      <div class="panel-box">
-        <div class="panel-label">SCORE</div>
-        <div class="panel-value" id="score">0</div>
-      </div>
-      <div class="panel-box">
-        <div class="panel-label">LEVEL</div>
-        <div class="panel-value" id="level">1</div>
-      </div>
-      <div class="panel-box">
-        <div class="panel-label">LINES</div>
-        <div class="panel-value" id="lines">0</div>
+      <div class="panel-box"><div class="panel-label">SCORE</div><div class="panel-value" id="score">0</div></div>
+      <div class="panel-box"><div class="panel-label">LEVEL</div><div class="panel-value" id="level">1</div></div>
+      <div class="panel-box"><div class="panel-label">LINES</div><div class="panel-value" id="lines">0</div></div>
+    </div>
+
+    <!-- Game canvas -->
+    <div id="game-area">
+      <canvas id="board" width="300" height="600"></canvas>
+      <div id="overlay">
+        <div id="overlay-text"></div>
+        <button id="overlay-btn">START</button>
       </div>
     </div>
 
-    <!-- Center column -->
-    <div id="center-col">
-
-      <!-- Mobile only: compact top bar (stats + next piece) -->
-      <div id="mobile-top">
-        <div id="mini-stats">
-          <div class="mini-stat">
-            <div class="mini-label">SCORE</div>
-            <div class="mini-value" id="score-m">0</div>
-          </div>
-          <div class="mini-stat">
-            <div class="mini-label">LEVEL</div>
-            <div class="mini-value" id="level-m">1</div>
-          </div>
-          <div class="mini-stat">
-            <div class="mini-label">LINES</div>
-            <div class="mini-value" id="lines-m">0</div>
-          </div>
-        </div>
-        <div id="mini-next">
-          <div class="mini-label">NEXT</div>
-          <canvas id="next-canvas-mobile" width="60" height="60"></canvas>
-        </div>
-      </div>
-
-      <!-- Game canvas -->
-      <div id="game-area">
-        <canvas id="board" width="300" height="600"></canvas>
-        <div id="overlay">
-          <div id="overlay-text"></div>
-          <button id="overlay-btn">START</button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Desktop only: right sidebar -->
+    <!-- Desktop right sidebar -->
     <div id="side-right">
       <div class="panel-box">
         <div class="panel-label">NEXT</div>
@@ -79,7 +58,7 @@
 
   </div>
 
-  <!-- Touch controls: shown only on touch devices via JS -->
+  <!-- TOUCH CONTROLS (hidden on desktop) -->
   <div id="touch-controls">
     <div class="touch-row">
       <button class="touch-btn" id="btn-rotate">&#8679;</button>
